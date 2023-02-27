@@ -32,7 +32,7 @@ export default function PostDetail(url: URL) {
         avatar={data.user.image}
         postTitle={data.title}
         id={data?.id}
-        Comment={data.comments}
+        comments={data.comments}
       />
       <AddComment id={data?.id} />
       {data?.comments?.map((comment: PostType) => (
