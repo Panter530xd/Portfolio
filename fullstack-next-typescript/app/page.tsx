@@ -15,7 +15,7 @@ export default function Home() {
     queryKey: ["posts"],
   });
   if (error) return error;
-  if (isLoading) return "Loading....";
+  if (isLoading) return "Loading...";
   console.log(data);
 
   return (
