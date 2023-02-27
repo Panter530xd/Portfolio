@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 export default function AddPost() {
   const [title, setTitle] = useState("");
   const [isDisable, setisDisable] = useState(false);
+  const queryClient = useQueryClient();
   let toastPostID: string;
 
   const { mutate } = useMutation(
@@ -24,6 +25,7 @@ export default function AddPost() {
       },
       onSuccess: (data) => {
         toast.success("Post has been made 🔥", { id: toastPostID });
+        queryClient.invalidateQueries(["posts"]);
         setTitle("");
         setisDisable(false);
       },
@@ -36,7 +38,10 @@ export default function AddPost() {
     mutate(title);
   };
   return (
-    <form onSubmit={submitPost} className="  bg-gray-300 my-8 p-7 rounded-md">
+    <form
+      onSubmit={submitPost}
+      className="  bg-gray-300 my-8 p-7 rounded-lg w-8/12 mx-auto"
+    >
       <div className=" flex flex-col py-4">
         <textarea
           onChange={(e) => setTitle(e.target.value)}

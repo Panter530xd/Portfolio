@@ -15,7 +15,13 @@ export default function SignOut({ image }: User) {
         Sign out
       </button>
       <Link href={"/dashboard"}>
-        <Image src={image} alt={"user img"} width={70} height={70} />
+        <Image
+          src={image}
+          alt={"user img"}
+          width={70}
+          height={70}
+          className="rounded-full"
+        />
       </Link>
     </div>
   );

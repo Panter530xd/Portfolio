@@ -1,14 +1,16 @@
 "use client";
-
+import { PostsType } from "./type/Postinterface";
 import axios from "axios";
 import AddPost from "./components/AddPost";
 import { useQuery } from "@tanstack/react-query";
+import Post from "./components/Post";
+
 const allPosts = async () => {
   const response = await axios.get("/api/posts/getPosts");
   return response.data;
 };
 export default function Home() {
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading } = useQuery<PostsType[]>({
     queryFn: allPosts,
     queryKey: ["posts"],
   });
@@ -19,6 +21,18 @@ export default function Home() {
   return (
     <main className=" py-10">
       <AddPost />
+      {data?.map((post) => {
+        return (
+          <Post
+            key={post.id}
+            name={post.user.name}
+            avatar={post.user.image}
+            postTitle={post.title}
+            id={post.id}
+            Comment={post.comments}
+          />
+        );
+      })}
     </main>
   );
 }
