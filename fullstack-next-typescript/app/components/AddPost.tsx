@@ -38,10 +38,7 @@ export default function AddPost() {
     mutate(title);
   };
   return (
-    <form
-      onSubmit={submitPost}
-      className="  bg-gray-300 my-8 p-7 rounded-lg w-8/12 mx-auto"
-    >
+    <form onSubmit={submitPost} className="bg-white my-8 p-8 rounded-md ">
       <div className=" flex flex-col py-4">
         <textarea
           onChange={(e) => setTitle(e.target.value)}
