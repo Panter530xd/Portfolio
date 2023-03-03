@@ -30,6 +30,7 @@ export default function Home() {
             postTitle={post.title}
             id={post.id}
             comments={post.comments}
+            hearts={post.hearts}
           />
         );
       })}

@@ -15,24 +15,26 @@ export default async function handler(
   const prismaUser = await prisma.user.findUnique({
     where: { email: session?.user?.email! },
   });
+
   //check to see if post was liked by user
   const heart = await prisma.heart.findFirst({
     where: {
-      postId: req.body.postId,
+      postId: req.body.data.id,
       userId: prismaUser?.id,
     },
   });
-
+  console.log(req.body);
   if (req.method === "POST") {
     //Add Like
     try {
       if (!heart) {
         const result = await prisma.heart.create({
           data: {
-            postId: req.body.postId,
+            postId: req.body.data.id,
             userId: prismaUser?.id!,
           },
         });
+        console.log(result);
         res.status(201).json(result);
       } else {
         const result = await prisma.heart.delete({

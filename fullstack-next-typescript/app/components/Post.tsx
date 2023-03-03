@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import ToogleHeart from "./ToogleHeart";
 
 interface Comment {
   createdAt: string;
@@ -16,9 +17,26 @@ interface Props {
   postTitle: string;
   comments?: Comment[];
   id: string;
+  postId: string;
+  hearts: {
+    postId: string;
+    id: string;
+    userId: string;
+  }[];
 }
 
-export default function Post({ avatar, name, postTitle, id, comments }: Props) {
+export default function Post({
+  avatar,
+  name,
+  postTitle,
+  id,
+  comments,
+  postId,
+  hearts,
+}: Props) {
+  const initialIsLiked = hearts?.length > 0;
+  const initialCount = hearts?.length;
+  console.log(hearts);
   return (
     <motion.div
       animate={{ opacity: 1, scale: 1 }}
@@ -49,6 +67,12 @@ export default function Post({ avatar, name, postTitle, id, comments }: Props) {
             {comments?.length} Comments
           </p>
         </Link>
+        <ToogleHeart
+          postId={postId}
+          initialIsLiked={initialIsLiked}
+          initialCount={initialCount}
+          id={id}
+        />
       </div>
     </motion.div>
   );

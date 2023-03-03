@@ -33,6 +33,8 @@ export default function PostDetail(url: URL) {
         postTitle={data.title}
         id={data?.id}
         comments={data.comments}
+        postId={data.id}
+        hearts={data.hearts}
       />
       <AddComment id={data?.id} />
       {data?.comments?.map((comment: PostType) => (
