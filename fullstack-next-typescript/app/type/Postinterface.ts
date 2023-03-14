@@ -1,5 +1,6 @@
 
 export type PostsType = {
+  hearts: { postId: string; id: string; userId: string }[]
   title: string
   id: string
   createdAt?: string

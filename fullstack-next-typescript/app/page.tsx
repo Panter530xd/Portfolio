@@ -6,9 +6,10 @@ import { useQuery } from "@tanstack/react-query";
 import Post from "./components/Post";
 
 const allPosts = async () => {
-  const response = await axios.get("/api/posts/getPosts");
+  const response = await axios.get("/api/posts");
   return response.data;
 };
+
 export default function Home() {
   const { data, error, isLoading } = useQuery<PostsType[]>({
     queryFn: allPosts,
@@ -31,6 +32,7 @@ export default function Home() {
             id={post.id}
             comments={post.comments}
             hearts={post.hearts}
+            postId={post.id}
           />
         );
       })}

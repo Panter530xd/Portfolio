@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 interface Props {
   postId: string;
   id: string;
+  initialIsLiked: boolean;
   initialCount: number;
 }
 
@@ -21,28 +22,9 @@ export default function Heart({ postId, id, initialCount }: Props) {
   const { status, data } = useSession();
   const userEmail = data?.user?.email;
 
-  useEffect(() => {
-    const fetchLike = async () => {
-      try {
-        const response = await axios.get(
-          `/api/posts/getLike?postId=${postId}&userEmail=${userEmail}`
-        );
-        setIsLiked(response.data.isLiked);
-        setCount(response.data.count);
-        setLikedPosts(response.data.likedPosts);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    if (userEmail) {
-      fetchLike();
-    }
-  }, [postId, userEmail]);
-
   const { mutate } = useMutation(
     async (data: { postId: string; id: string }) => {
-      return await axios.post("/api/posts/addLike", { data });
+      return await axios.post("/api/likes", { data });
     },
     {
       onSuccess: (data) => {
@@ -62,40 +44,64 @@ export default function Heart({ postId, id, initialCount }: Props) {
     }
   );
 
+  const { mutate: removeMutate } = useMutation(
+    async (data: { postId: string; id: string }) => {
+      return await axios.post("/api/likes", { data });
+    },
+    {
+      onSuccess: (data) => {
+        console.log("data", data);
+        setIsLiked(false);
+        setCount(count - 1);
+        setLikedPosts(likedPosts.filter((id) => id !== postId));
+        setUserLikedPosts(userLikedPosts.filter((id) => id !== postId));
+        toast.error("Like removed", { id: commentToastId });
+      },
+      onError: (error) => {
+        console.log(error);
+        setIsLiked(true);
+        if (error instanceof AxiosError) {
+          toast.error(error?.response?.data.message, { id: commentToastId });
+        }
+      },
+    }
+  );
+
   const handleHeartClick = async () => {
-    if (userLikedPosts.includes(postId)) {
-      if (isLiked) {
-        toast.error("You can't unlike a post that you've already liked", {
-          id: commentToastId,
-        });
+    if (!userEmail) {
+      toast.error("Please login to like the post", { id: commentToastId });
+      return;
+    }
+
+    if (likedPosts?.includes(postId)) {
+      // Remove the like
+      try {
+        await removeMutate({ postId, id });
+        setIsLiked(false);
+        setCount(count - 1);
+        setLikedPosts(likedPosts.filter((id) => id !== postId));
+        setUserLikedPosts(userLikedPosts.filter((id) => id !== postId)); // <--- Update state here
+        toast.error("Like removed", { id: commentToastId });
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      // Add the like
+      if (userLikedPosts.includes(postId)) {
+        // User already liked the post
+        toast.error("You have already liked this post", { id: commentToastId });
       } else {
-        // Unlike the post
         try {
-          await axios.delete(`/api/posts/removeLike?postId=${postId}`);
-          setIsLiked(false);
-          setCount(count - 1);
-          setLikedPosts(likedPosts.filter((id) => id !== postId));
-          setUserLikedPosts(userLikedPosts.filter((id) => id !== postId));
-          toast.error("Like removed", { id: commentToastId });
+          await mutate({ postId, id });
+          setIsLiked(true);
+          setCount(count + 1);
+          setUserLikedPosts([...userLikedPosts, postId]);
+          toast.success("Like added", { id: commentToastId });
         } catch (error) {
           console.log(error);
         }
       }
-      return;
     }
-
-    setCount(count + 1);
-    setIsLiked(true);
-
-    if (status === "authenticated") {
-      mutate({ postId, id });
-    } else {
-      toast.error("Please login to like the post", { id: commentToastId });
-    }
-
-    setLikedPosts([...likedPosts, postId]);
-    setUserLikedPosts([...userLikedPosts, postId]);
-    toast.success("Like added", { id: commentToastId });
   };
 
   return (

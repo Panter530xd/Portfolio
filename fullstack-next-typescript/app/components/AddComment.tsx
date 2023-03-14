@@ -21,7 +21,7 @@ export default function AddComment({ id }: PostProps) {
   let commentToastId: string;
   const { mutate } = useMutation(
     async (data: Comment) => {
-      return axios.post("/api/posts/addComment", { data });
+      return axios.post("/api/comments", { data });
     },
     {
       onSuccess: (data) => {
@@ -49,6 +49,7 @@ export default function AddComment({ id }: PostProps) {
     });
     mutate({ title, postId: id });
   };
+
   return (
     <form onSubmit={submitComment} className=" my-8">
       <h3>Add a Comment</h3>
