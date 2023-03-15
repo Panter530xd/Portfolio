@@ -8,8 +8,8 @@ export default async function Nav() {
   const session = await getServerSession(authOptions);
 
   return (
-    <nav className="flex justify-between mx-5 pt-3">
-      <Link href={"/"}>Send it.</Link>
+    <nav className="flex justify-between items-center mx-5 pt-3">
+      <Link href={"/"}>Post it.</Link>
       <div>
         {session ? <SignOut image={session.user?.image || ""} /> : <Login />}
       </div>

@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const commentSchema = z.object({
   title: z.string().min(1),
-  postId: z.string().uuid(),
+  postId: z.string().cuid(),
 });
 
 type CommentData = z.infer<typeof commentSchema>;
@@ -36,9 +36,11 @@ export default async function handler(
     const session = await getServerSession(req, res, authOptions);
 
     if (!session) {
-      return res
+      res
         .status(401)
         .json({ message: "Please signin to post a comment." });
+
+        return;
     }
 
     const prismaUser = await prisma.user.findUnique({
@@ -50,15 +52,9 @@ export default async function handler(
       return;
     }
 
-    let commentData: CommentData;
     try {
-      commentData = commentSchema.parse(req.body.data);
-    } catch (error) {
-      res.status(401).json({ message: "Invalid Data" });
-      return;
-    }
+      const commentData = commentSchema.parse(req.body.data);
 
-    try {
       const result = await prisma.comment.create({
         data: {
           title: commentData.title,
@@ -68,9 +64,10 @@ export default async function handler(
       });
       res.status(200).json(result);
     } catch (err) {
-      res
-        .status(403)
-        .json({ err: "Error has occurred while making a post" });
+      // handle zod error
+
+      // handle other errors
+      res.status(403).json({ err: "Error has occurred while making a post" });
     }
   }
 }

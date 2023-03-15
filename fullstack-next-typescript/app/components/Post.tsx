@@ -36,7 +36,7 @@ export default function Post({
 }: Props) {
   const initialIsLiked = hearts?.length > 0;
   const initialCount = hearts?.length;
-  console.log(hearts);
+
   return (
     <motion.div
       animate={{ opacity: 1, scale: 1 }}
