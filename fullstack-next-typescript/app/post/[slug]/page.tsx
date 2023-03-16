@@ -19,6 +19,7 @@ type URL = {
 };
 
 export default function PostDetail(url: URL) {
+  let deleteToastID: string;
   const { data, isLoading } = useQuery({
     queryFn: () => fetchDetails(url.params.slug),
     queryKey: ["detail-post"],
