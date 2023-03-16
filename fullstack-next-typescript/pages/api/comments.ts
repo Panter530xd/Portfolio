@@ -40,7 +40,7 @@ export default async function handler(
         .status(401)
         .json({ message: "Please signin to post a comment." });
 
-        return;
+      return;
     }
 
     const prismaUser = await prisma.user.findUnique({
@@ -64,10 +64,21 @@ export default async function handler(
       });
       res.status(200).json(result);
     } catch (err) {
-      // handle zod error
+      if (err instanceof z.ZodError) {
+        const errorMap: { [k: string]: string } = {};
 
-      // handle other errors
-      res.status(403).json({ err: "Error has occurred while making a post" });
+        err.errors.forEach((error) => {
+          if (error.path) {
+            errorMap[error.path[0]] = error.message;
+          }
+        });
+
+        res.status(422).json({ errors: errorMap });
+      } else {
+        res
+          .status(500)
+          .json({ error: "An unexpected error has occurred." });
+      }
     }
   }
 }
